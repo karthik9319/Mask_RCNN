@@ -74,8 +74,7 @@ def compute_iou(box, boxes, box_area, boxes_area):
     x2 = np.minimum(box[3], boxes[:, 3])
     intersection = np.maximum(x2 - x1, 0) * np.maximum(y2 - y1, 0)
     union = box_area + boxes_area[:] - intersection[:]
-    iou = intersection / union
-    return iou
+    return intersection / union
 
 
 def compute_overlaps(boxes1, boxes2):
@@ -114,9 +113,7 @@ def compute_overlaps_masks(masks1, masks2):
     # intersections and union
     intersections = np.dot(masks1.T, masks2)
     union = area1[:, None] + area2[None, :] - intersections
-    overlaps = intersections / union
-
-    return overlaps
+    return intersections / union
 
 
 def non_max_suppression(boxes, scores, threshold):
@@ -202,8 +199,7 @@ def box_refinement_graph(box, gt_box):
     dh = tf.log(gt_height / height)
     dw = tf.log(gt_width / width)
 
-    result = tf.stack([dy, dx, dh, dw], axis=1)
-    return result
+    return tf.stack([dy, dx, dh, dw], axis=1)
 
 
 def box_refinement(box, gt_box):
@@ -632,10 +628,17 @@ def generate_pyramid_anchors(scales, ratios, feature_shapes, feature_strides,
     """
     # Anchors
     # [anchor_count, (y1, x1, y2, x2)]
-    anchors = []
-    for i in range(len(scales)):
-        anchors.append(generate_anchors(scales[i], ratios, feature_shapes[i],
-                                        feature_strides[i], anchor_stride))
+    anchors = [
+        generate_anchors(
+            scales[i],
+            ratios,
+            feature_shapes[i],
+            feature_strides[i],
+            anchor_stride,
+        )
+        for i in range(len(scales))
+    ]
+
     return np.concatenate(anchors, axis=0)
 
 

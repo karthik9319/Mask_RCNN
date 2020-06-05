@@ -115,7 +115,7 @@ class ShapesDataset(utils.Dataset):
         shapes = info['shapes']
         count = len(shapes)
         mask = np.zeros([info['height'], info['width'], count], dtype=np.uint8)
-        for i, (shape, _, dims) in enumerate(info['shapes']):
+        for i, (shape, _, dims) in enumerate(shapes):
             mask[:, :, i:i + 1] = self.draw_shape(mask[:, :, i:i + 1].copy(),
                                                   shape, dims, 1)
         # Handle occlusions
@@ -157,7 +157,7 @@ class ShapesDataset(utils.Dataset):
         # Shape
         shape = random.choice(["square", "circle", "triangle"])
         # Color
-        color = tuple([random.randint(0, 255) for _ in range(3)])
+        color = tuple(random.randint(0, 255) for _ in range(3))
         # Center x, y
         buffer = 20
         y = random.randint(buffer, height - buffer - 1)

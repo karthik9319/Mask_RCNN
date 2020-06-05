@@ -99,11 +99,10 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     """
     # Number of instances
     N = boxes.shape[0]
-    if not N:
-        print("\n*** No instances to display *** \n")
+    if N:
+        assert N == masks.shape[-1] == class_ids.shape[0]
     else:
-        assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
-
+        print("\n*** No instances to display *** \n")
     # If no axis is passed, create one and automatically call show()
     auto_show = False
     if not ax:
@@ -136,13 +135,13 @@ def display_instances(image, boxes, masks, class_ids, class_names,
             ax.add_patch(p)
 
         # Label
-        if not captions:
+        if captions:
+            caption = captions[i]
+        else:
             class_id = class_ids[i]
             score = scores[i] if scores is not None else None
             label = class_names[class_id]
             caption = "{} {:.3f}".format(label, score) if score else label
-        else:
-            caption = captions[i]
         ax.text(x1, y1 + 8, caption,
                 color='w', size=11, backgroundcolor="none")
 
@@ -485,7 +484,9 @@ def display_weight_stats(model):
             weight_name = weight_tensors[i].name
             # Detect problematic layers. Exclude biases of conv layers.
             alert = ""
-            if w.min() == w.max() and not (l.__class__.__name__ == "Conv2D" and i == 1):
+            if w.min() == w.max() and (
+                l.__class__.__name__ != "Conv2D" or i != 1
+            ):
                 alert += "<span style='color:red'>*** dead?</span>"
             if np.abs(w.min()) > 1000 or np.abs(w.max()) > 1000:
                 alert += "<span style='color:red'>*** Overflow?</span>"

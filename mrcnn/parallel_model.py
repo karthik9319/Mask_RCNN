@@ -63,7 +63,7 @@ class ParallelModel(KM.Model):
 
         output_names = self.inner_model.output_names
         outputs_all = []
-        for i in range(len(self.inner_model.outputs)):
+        for _ in self.inner_model.outputs:
             outputs_all.append([])
 
         # Run the model call() on each GPU to place the ops there

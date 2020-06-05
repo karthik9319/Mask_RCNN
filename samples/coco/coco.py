@@ -109,7 +109,7 @@ class CocoDataset(utils.Dataset):
             self.auto_download(dataset_dir, subset, year)
 
         coco = COCO("{}/annotations/instances_{}{}.json".format(dataset_dir, subset, year))
-        if subset == "minival" or subset == "valminusminival":
+        if subset in ["minival", "valminusminival"]:
             subset = "val"
         image_dir = "{}/{}{}".format(dataset_dir, subset, year)
 
@@ -304,8 +304,7 @@ class CocoDataset(utils.Dataset):
         :return: binary mask (numpy 2D array)
         """
         rle = self.annToRLE(ann, height, width)
-        m = maskUtils.decode(rle)
-        return m
+        return maskUtils.decode(rle)
 
 
 ############################################################
